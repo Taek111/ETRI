@@ -65,28 +65,6 @@ def isError(body_info, frame, joint):
     else:
         return False
 
-def transform_body_info_2(skeleton_file):
-    body_info = AiR_2017.read_body(skeleton_file)
-    depth_file = open(skeleton_file.replace("dat", "bin"), 'rb')
-
-
-    for f in range(1, len(body_info)):
-        for j in range(JOINT_COUNT):
-            if isError(body_info, f, j) and not body_info[f-1][0]["joints"][j]["z"] == 0:
-
-                depth_info = read_depth(depth_file, f)
-                square = list()
-                for c in range(11):
-                    for r in range(11):
-
-                        square.append(depth_info[body_info[f][0]["joints"][j]["depthY"] - 5 + c]\
-                                                   [body_info[f][0]["joints"][j]["depthX"] - 5 + r])
-                # body_info[f][body_id[0]]["joints"][j]["z"] = min([x for x in square if x != 0]) / 1000
-                difference_matrix = [abs(body_info[f-1][0]["joints"][j]["z"]-x) for x in square]
-                body_info[f][0]["joints"][j]["z"] = square[difference_matrix.index(min(difference_matrix))]
-
-    body_info = AiR_2017.remakeXY_from_Z(body_info)
-    return body_info
 
 if __name__ == "__main__":
     main()
